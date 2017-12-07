@@ -24,6 +24,7 @@ def siftExtrator(poseId):
 		img=cv2.drawKeypoints(gray,kp,None,flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 		cv2.imwrite('./test/sift%c%d.jpg'%(poseId,i),img)
 		print(descriptors.shape)
+	return descriptors
 
 siftExtrator('A')
 
