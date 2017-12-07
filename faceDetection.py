@@ -19,6 +19,7 @@ while(cap.isOpened()):
 		# for (ex,ey,ew,eh) in eyes:
 		# 	cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
 	cv2.imshow('marked',img)
+	cv2.imwrite('faceSubtraction.jpg',img)
 	interrupt=cv2.waitKey(10)
 	if interrupt & 0xFF == ord('q'):
 		break;
