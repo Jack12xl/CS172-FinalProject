@@ -44,7 +44,8 @@ def Kmeans(descriptor):
 	NumberOfNodes = np.array([list(labels).count(i) for i in range(50) ])
 	# NumberOfNodes gives number of nodes in each cluster.
 	# print(compactness)
-	return NumberOfNodes
+	# return NumberOfNodes
+	return centers
 
 
 bagOfWords=[]
