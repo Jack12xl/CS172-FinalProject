@@ -41,7 +41,7 @@ def Kmeans(descriptor):
 	compactness,labels,centers = cv2.kmeans(descriptor,50,None,criteria,10,flags)
 	# compactness gives the error, labels gives the cluster each point is in
 	# centers gives the value of center
-	NumberOfNodes = np.array([list(labels).count(i) for i in range(50) ])
+	# NumberOfNodes = np.array([list(labels).count(i) for i in range(50) ])
 	# NumberOfNodes gives number of nodes in each cluster.
 	# print(compactness)
 	# return NumberOfNodes
