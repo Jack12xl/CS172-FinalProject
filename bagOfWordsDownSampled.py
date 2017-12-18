@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 from sklearn.cluster import KMeans
+from sklearn import svm
+from sklearn.model_selection import train_test_split
 
 
 SIFTfeatures=[]
@@ -18,14 +20,14 @@ def siftExtrator(poseName,poseId):
 		sift=cv2.xfeatures2d.SIFT_create()
 		kp,des=sift.detectAndCompute(gray,None)
 		des=des.T/des.sum(axis=1,dtype='float')
-		print('this descriptor shape:',des.shape)
+		# print('this descriptor shape:',des.shape)
 		if i==0:
 			descriptors=des
 			ret,thresh=cv2.threshold(gray,25,255,cv2.THRESH_BINARY)
 			cv2.imwrite('template%d.jpg'%poseId,img)
 		else:
 			descriptors=np.concatenate((descriptors,des),axis=1)
-		print('all descriptors shape:',descriptors.shape)
+		# print('all descriptors shape:',descriptors.shape)
 		featuresEveryPic.append(des.shape[1])
 		img=cv2.drawKeypoints(gray,kp,None,flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 		cv2.imwrite('./test/sift%c%d.jpg'%(poseName,i),img)
@@ -116,12 +118,25 @@ print('size:',allFeatures.shape)
 kmeans=kmeansNew(allFeatures.T,7)
 Words=kmeans.cluster_centers_
 labels=kmeans.labels_
+# print(labels.size)
+# print(Words[1])
 dictPose=BoWeveryPic(numEachPic,labels)
-print(dictPose)
-
-
-
-
-
-
-
+# print(len(dictPose[0]))
+lb = np.array([])
+test_set = []
+for ts in range(10):
+	lb = np.concatenate([lb,np.linspace(ts,ts,len(dictPose[ts]))])
+	for d in range(len(dictPose[ts])):
+		test_set.append(list(dictPose[ts][d][0]))
+# print(lb)
+# print(test_set)
+# split the testdata and training data
+x_train, x_test, y_train, y_test = train_test_split(test_set,lb,random_state=1,train_size=0.8)
+clf = svm.SVC( kernel='rbf', gamma=20, decision_function_shape='ovr')
+clf.fit(x_train, y_train.ravel())
+print (clf.score(x_train, y_train) )
+y_hat = clf.predict(x_train)
+print (clf.score(x_test, y_test))
+y_hat = clf.predict(x_test)
+print ('decision_function:\n', clf.decision_function(x_train))
+print ('\npredict:\n', clf.predict(x_train))

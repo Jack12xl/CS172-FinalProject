@@ -52,21 +52,17 @@ bagOfWords=[]
 for i in range(4):
 	Descriptor = siftExtrator(chr(ord('A')+i),i)
 	bagOfWords.append(Kmeans(Descriptor))
-Descriptor = siftExtrator('G',4)
-bagOfWords.append(Kmeans(Descriptor))
-Descriptor = siftExtrator('H',5)
-bagOfWords.append(Kmeans(Descriptor))
-Descriptor = siftExtrator('I',6)
-bagOfWords.append(Kmeans(Descriptor))
-Descriptor = siftExtrator('L',7)
-bagOfWords.append(Kmeans(Descriptor))
-Descriptor = siftExtrator('V',8)
-bagOfWords.append(Kmeans(Descriptor))
-Descriptor = siftExtrator('Y',9)
-bagOfWords.append(Kmeans(Descriptor))
-
-bagOfWords = np.array(bagOfWords)
-print bagOfWords.shape
-
-
-
+	Descriptor = siftExtrator('G',4)
+	bagOfWords.append(Kmeans(Descriptor))
+	Descriptor = siftExtrator('H',5)
+	bagOfWords.append(Kmeans(Descriptor))
+	Descriptor = siftExtrator('I',6)
+	bagOfWords.append(Kmeans(Descriptor))
+	Descriptor = siftExtrator('L',7)
+	bagOfWords.append(Kmeans(Descriptor))
+	Descriptor = siftExtrator('V',8)
+	bagOfWords.append(Kmeans(Descriptor))
+	Descriptor = siftExtrator('Y',9)
+	bagOfWords.append(Kmeans(Descriptor))
+	bagOfWords = np.array(bagOfWords)
+print(bagOfWords.shape)

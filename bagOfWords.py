@@ -104,12 +104,7 @@ def labeledPic(numEachPic,labels):
 
 FeatureOfPose,allFeatures=readInAndMatch()
 labels, Words =Kmeans(allFeatures,750)
+print(labels.size)
+print(Words.size)
 dictPose=labeledPic(numEachPic,labels)
-print(dictPose)
-
-
-
-
-
-
-
+# print(dictPose)
