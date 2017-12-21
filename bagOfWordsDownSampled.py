@@ -102,7 +102,7 @@ def BoWeveryPic(numEachPic,labels):
 	for pose in numEachPic:
 		BoWOfPose=[]
 		for pic in pose:
-			BowVectors=np.zeros((1,7),dtype=int)
+			BowVectors=np.zeros((1,210),dtype=int)
 			unique,counts=np.unique(labels[ptr:ptr+pic],return_counts=True)
 			index=np.array(range(counts.shape[0]))
 			BowVectors[0,unique]=counts[index]
@@ -115,7 +115,7 @@ def BoWeveryPic(numEachPic,labels):
 
 FeatureOfPose,allFeatures=readInAndMatch()
 print('size:',allFeatures.shape)
-kmeans=kmeansNew(allFeatures.T,7)
+kmeans=kmeansNew(allFeatures.T,210)
 Words=kmeans.cluster_centers_
 labels=kmeans.labels_
 # print(labels.size)
@@ -131,12 +131,22 @@ for ts in range(10):
 # print(lb)
 # print(test_set)
 # split the testdata and training data
-x_train, x_test, y_train, y_test = train_test_split(test_set,lb,random_state=1,train_size=0.8)
-clf = svm.SVC( kernel='rbf', gamma=20, decision_function_shape='ovr')
+x_train, x_test, y_train, y_test = train_test_split(test_set,lb,random_state=1,train_size=0.9)
+# print('test_set ',test_set)
+# print('lb ',lb)
+
+# print('x_train ',x_train)
+# print('y_train ',y_train)
+print('x_test ',x_test)
+print('y_test ',y_test)
+
+# clf = svm.SVC( kernel='rbf', gamma=20, decision_function_shape='ovr')
+clf = svm.SVC( kernel='linear', decision_function_shape='ovr')
 clf.fit(x_train, y_train.ravel())
 print (clf.score(x_train, y_train) )
-y_hat = clf.predict(x_train)
+# y_hat = clf.predict(x_train)
 print (clf.score(x_test, y_test))
-y_hat = clf.predict(x_test)
-print ('decision_function:\n', clf.decision_function(x_train))
-print ('\npredict:\n', clf.predict(x_train))
+# y_hat = clf.predict(x_test)
+# print ('decision_function:\n', clf.decision_function(x_train))
+# print ('\npredict:\n', clf.predict(x1))
+print ('\npredict:\n', clf.predict(x_test))
