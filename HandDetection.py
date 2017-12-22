@@ -5,16 +5,19 @@ cap = cv2.VideoCapture(0)
 clf = joblib.load("svmclf.m")
 kmeans=joblib.load("kmeans.pkl")
 # Creating a window for HSV track bars
-cv2.namedWindow('HSV_TrackBar')
+# cv2.namedWindow('HSV_TrackBar')
 
 def SIFTtest(gray,kmeans,i):
 	# gray=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+	# cv2.imwrite('/pose/data%d.jpg'%i,gray)
 	sift=cv2.xfeatures2d.SIFT_create()
 	kp,des=sift.detectAndCompute(gray,None)
+	if kp == []:
+		return None,None
 	des=des.T/des.sum(axis=1,dtype='float')
 	img=cv2.drawKeypoints(gray,kp,None,flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 	labels=kmeans.predict(des.T)
-	cv2.imwrite('testsift%d.jpg'%i,img)
+
 	return des,labels
 
 def getTestBoWVector(labels):
@@ -22,7 +25,7 @@ def getTestBoWVector(labels):
 	unique,counts=np.unique(labels,return_counts=True)
 	index=np.array(range(counts.shape[0]))
 	BowVectors[0,unique]=counts[index]
-	print(BowVectors)
+	# print(BowVectors)
 	return BowVectors
 
 # # Starting with 100's to prevent error while masking
@@ -39,9 +42,9 @@ def getTestBoWVector(labels):
 count=0
 while(cap.isOpened()):
 	ret,img = cap.read()
-	cv2.rectangle(img,(500,0),(800,300),(255,0,0),3)
+	cv2.rectangle(img,(300,0),(600,300),(255,0,0),3)
 	cv2.imshow('test',img)
-	img=img[0:300,500:800]
+	img=img[0:300,300:600]
 	# load a statistical model, which is the XML file classifier for frontal
 	# faces provided by OpenCV to detect the faces from the frames captured
 	# from a webcam during the testing stage.
@@ -50,7 +53,7 @@ while(cap.isOpened()):
 	# gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 	# faces = face_cascade.detectMultiScale(gray, 1.3, 5)
 	# print(faces)
-	# for (x,y,w,h) in faces:
+	# for (x,y,w,h) in faces	cv2.imwrite('testsift%d.jpg'%i,img):
 	# 	cv2.circle(img,(int(x+w/2),int(y+h/2)),int(max(w/2+10,h/2+10)),(0,0,0),-1)
 	# 	roi_gray = gray[y:y+h, x:x+w]
 	# 	roi_color = img[y:y+h, x:x+w]
@@ -64,7 +67,7 @@ while(cap.isOpened()):
 	#Convert to HSV color space
 	hsv = cv2.cvtColor(blur,cv2.COLOR_BGR2HSV)
 	#Create a binary image with where white will be skin colors and rest is black
-	mask2 = cv2.inRange(hsv,np.array([0,10,20]),np.array([20,255,255]))
+	mask2 = cv2.inRange(hsv,np.array([0,70,50]),np.array([20,190,255]))
 	#Kernel matrices for morphological transformation
 	kernel_square = np.ones((11,11),np.uint8)
 	kernel_ellipse= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
@@ -80,13 +83,13 @@ while(cap.isOpened()):
 	kernel_ellipse= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
 	dilation3 = cv2.dilate(filtered,kernel_ellipse,iterations = 1)
 	median = cv2.medianBlur(dilation2,5)
-	ret,thresh = cv2.threshold(median,127,1,cv2.THRESH_BINARY)
+	ret,thresh = cv2.threshold(median,10,1,cv2.THRESH_BINARY)
 
 	mul = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-	print('before:',mul[0:10][0:10])
+	# print('before:',mul[0:10][0:10])
 	cv2.imshow('mulgray',mul)
 	mul = np.multiply(mul,thresh)
-	print('after:',mul[0:10][0:10])
+	# print('after:',mul[0:10][0:10])
 
 	cv2.imshow('mul',mul)
 
@@ -142,6 +145,8 @@ while(cap.isOpened()):
 	if np.count_nonzero(pic) == 0:
 		continue
 	descriptor,labels=SIFTtest(pic,kmeans,count)
+	if labels is None:
+		continue
 	BoWVector=getTestBoWVector(labels)
 	print(clf.predict(BoWVector))
 	cv2.imshow('ROI',pic)
@@ -164,4 +169,3 @@ while(cap.isOpened()):
 
 cap.release()
 cv2.destroyAllWindows()
-
