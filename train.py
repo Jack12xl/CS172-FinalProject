@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.cluster import KMeans
 from sklearn import svm
 from sklearn.model_selection import train_test_split
-
+from sklearn.externals import joblib
 
 SIFTfeatures=[]
 numEachPic=[]
@@ -80,8 +80,8 @@ def readInAndMatch():
 	for i in range(4):
 		FeatureOfPose[chr(ord('A')+i)]=featureMap(pointer,chr(ord('A')+i),i)
 		pointer=FeatureOfPose[chr(ord('A')+i)]
-	FeatureOfPose['G']=featureMap(pointer,'G',4)
-	pointer=FeatureOfPose['G']
+	# FeatureOfPose['G']=featureMap(pointer,'G',4)
+	# pointer=FeatureOfPose['G']
 	FeatureOfPose['H']=featureMap(pointer,'H',5)
 	pointer=FeatureOfPose['H']
 	FeatureOfPose['I']=featureMap(pointer,'I',6)
@@ -116,37 +116,40 @@ def BoWeveryPic(numEachPic,labels):
 FeatureOfPose,allFeatures=readInAndMatch()
 print('size:',allFeatures.shape)
 kmeans=kmeansNew(allFeatures.T,210)
+joblib.dump(kmeans,"./mode/kmeans.pkl")
 Words=kmeans.cluster_centers_
 labels=kmeans.labels_
 # print(labels.size)
 # print(Words[1])
 dictPose=BoWeveryPic(numEachPic,labels)
-# print(len(dictPose[0]))
+# print(dictPose)
 lb = np.array([])
 test_set = []
-for ts in range(10):
+for ts in range(9):
 	lb = np.concatenate([lb,np.linspace(ts,ts,len(dictPose[ts]))])
 	for d in range(len(dictPose[ts])):
 		test_set.append(list(dictPose[ts][d][0]))
 # print(lb)
 # print(test_set)
 # split the testdata and training data
-x_train, x_test, y_train, y_test = train_test_split(test_set,lb,random_state=1,train_size=0.9)
+# x_train, x_test, y_train, y_test = train_test_split(test_set,lb,random_state=1,train_size=0.9)
 # print('test_set ',test_set)
 # print('lb ',lb)
 
 # print('x_train ',x_train)
 # print('y_train ',y_train)
-print('x_test ',x_test)
-print('y_test ',y_test)
+# print('x_test ',x_test)
+# print('y_test ',y_test)
 
 # clf = svm.SVC( kernel='rbf', gamma=20, decision_function_shape='ovr')
 clf = svm.SVC( kernel='linear', decision_function_shape='ovr')
-clf.fit(x_train, y_train.ravel())
-print (clf.score(x_train, y_train) )
+# clf.fit(x_train, y_train.ravel())
+clf.fit(test_set, lb.ravel())
+# print (clf.score(x_train, y_train) )
 # y_hat = clf.predict(x_train)
-print (clf.score(x_test, y_test))
+# print (clf.score(x_test, y_test))
 # y_hat = clf.predict(x_test)
 # print ('decision_function:\n', clf.decision_function(x_train))
 # print ('\npredict:\n', clf.predict(x1))
-print ('\npredict:\n', clf.predict(x_test))
+# print ('\npredict:\n', clf.predict(x_test))
+joblib.dump(clf,"./mode/svm.m")

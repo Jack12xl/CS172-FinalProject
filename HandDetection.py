@@ -1,9 +1,10 @@
 import numpy as np
 import cv2
 from sklearn.externals import joblib
-cap = cv2.VideoCapture(0)
-clf = joblib.load("svmclf.m")
-kmeans=joblib.load("kmeans.pkl")
+from sklearn.preprocessing import Imputer
+cap = cv2.VideoCapture(1)
+clf = joblib.load("./mode/svm.m")
+kmeans=joblib.load("./mode/kmeans.pkl")
 # Creating a window for HSV track bars
 # cv2.namedWindow('HSV_TrackBar')
 
@@ -14,7 +15,8 @@ def SIFTtest(gray,kmeans,i):
 	kp,des=sift.detectAndCompute(gray,None)
 	if kp == []:
 		return None,None
-	des=des.T/des.sum(axis=1,dtype='float')
+
+	des= Imputer().fit_transform(des.T/des.sum(axis=1,dtype='float'))
 	img=cv2.drawKeypoints(gray,kp,None,flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 	labels=kmeans.predict(des.T)
 
