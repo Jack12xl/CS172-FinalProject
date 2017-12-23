@@ -2,7 +2,8 @@ import numpy as np
 import cv2
 from sklearn.externals import joblib
 from sklearn.preprocessing import Imputer
-cap = cv2.VideoCapture(0)
+import random
+cap = cv2.VideoCapture(1)
 clf = joblib.load("./mode/svm.m")
 kmeans=joblib.load("./mode/kmeans.pkl")
 # Creating a window for HSV track bars
@@ -62,7 +63,10 @@ OrederOfCorrectWord = random.randrange(0,len(Vocabulary),1)
 Word = Vocabulary[OrederOfCorrectWord]
 print(Meaning[OrederOfCorrectWord])
 CorrectNumber = 0
+NumberOfCorrectTimes = 0
 count=0
+print('Gesture: ' + str(Word[CorrectNumber]) + '  ' + str(WordList[Word[CorrectNumber]]))
+
 while(cap.isOpened()):
 	ret,img = cap.read()
 	cv2.rectangle(img,(300,0),(600,300),(255,0,0),3)
@@ -172,18 +176,29 @@ while(cap.isOpened()):
 		continue
 	BoWVector=getTestBoWVector(labels)
 	InputNumber = clf.predict(BoWVector)
-	print(clf.predict(BoWVector))
+	# print(clf.predict(BoWVector))
+
 	cv2.imshow('ROI',pic)
-	if int(InputNumber[0]) == Word[CorrectNumber]:
+	# print('NUM' + str(NumberOfCorrectTimes))
+	if  NumberOfCorrectTimes == 2:
+
 		print(WordList[Word[CorrectNumber]])
 		CorrectNumber += 1
-	
+		if CorrectNumber != len(Word):
+			print('Gesture: ' + str(Word[CorrectNumber]) + '  ' + str(WordList[Word[CorrectNumber]]))
+		NumberOfCorrectTimes = 0
+	elif int(InputNumber[0]) == Word[CorrectNumber]:
+		NumberOfCorrectTimes += 1
+	else:
+		NumberOfCorrectTimes = 0
+
 	if CorrectNumber == len(Word):
 		OrederOfCorrectWord = random.randrange(0,len(Vocabulary),1)
 		Word = Vocabulary[OrederOfCorrectWord]
 		print(Meaning[OrederOfCorrectWord])
-		CorrectNumber = 0 
-
+		CorrectNumber = 0
+		print('Gesture: ' + str(Word[CorrectNumber]) + '  ' + str(WordList[Word[CorrectNumber]]))
+		
 	# cv2.drawContours(img,[hull],-1,(255,255,255),2)
 
 	###############################
