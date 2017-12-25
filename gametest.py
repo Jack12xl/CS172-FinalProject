@@ -64,7 +64,7 @@ def countDown(gameDisplay,bg,itime):
         pygame.display.flip()
     gameDisplay.blit(bg,(0,0))
     show=font.render('GO!',True,(0,0,0))
-    gameDisplay.blit(show,(450,300))
+    gameDisplay.blit(show,(450,200))
     pygame.display.flip()
     return
 
